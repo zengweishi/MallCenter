@@ -33,9 +33,11 @@ public class FastDFSClient {
 
     /**
      * 上传文件
+     * @param file
+     * @return
      */
     public static String[] upload(FastDFSfile file) {
-        //获取文件作者
+        //附加参数：获取文件作者
         NameValuePair[] meta_list = new NameValuePair[1];
         meta_list[0] = new NameValuePair("author",file.getAuthor());
 
