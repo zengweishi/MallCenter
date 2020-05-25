@@ -281,6 +281,36 @@ public class SpuServiceImpl implements SpuService {
         saveSkuList(goods);
     }
 
+    /**
+     * 审核商品
+     * @param id
+     */
+    @Override
+    public void audit(Long id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        //已审核
+        spu.setStatus("1");
+        spuMapper.updateByPrimaryKey(spu);
+    }
+
+    /**
+     * 下架商品
+     * @param id
+     */
+    @Override
+    public void pullGoods(Long id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        //下架
+        spu.setStatus("0");
+        spuMapper.updateByPrimaryKey(spu);
+    }
+
+    /**
+     * 下架商品
+     * @param goods
+     */
+
+
     private void saveSkuList(Goods goods) {
         Spu spu = goods.getSpu();
         //查询品牌

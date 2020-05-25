@@ -82,4 +82,15 @@ public interface SpuService {
      * 修改商品
      */
     void updateGoods(Goods goods);
+
+
+    /**
+     * 审核商品
+     */
+    void audit(Long id);
+
+    /**
+     * 下架商品
+     */
+    void pullGoods(Long id);
 }

@@ -152,4 +152,22 @@ public class SpuController {
         spuService.updateGoods(goods);
         return new Result(true,StatusCode.OK,"商品修改成功");
     }
+
+    /**
+     * 审核商品
+     */
+    @PutMapping("/audit/{id}")
+    public Result audit(@PathVariable Long id){
+        spuService.audit(id);
+        return new Result();
+    }
+
+    /**
+     * 下架商品
+     */
+    @PutMapping("/pull/{id}")
+    public Result pull(@PathVariable Long id){
+        spuService.pullGoods(id);
+        return new Result();
+    }
 }
