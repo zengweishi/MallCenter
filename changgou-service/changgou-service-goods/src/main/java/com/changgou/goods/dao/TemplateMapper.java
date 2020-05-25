@@ -3,9 +3,9 @@ import com.changgou.goods.pojo.Template;
 import tk.mybatis.mapper.common.Mapper;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:Template的Dao
- * @Date 2019/6/14 0:12
+ * @Date 2020/5/25 10:16
  *****/
 public interface TemplateMapper extends Mapper<Template> {
 }

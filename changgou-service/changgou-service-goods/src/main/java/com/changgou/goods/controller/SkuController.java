@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:
- * @Date 2019/6/14 0:18
+ * @Date 2020/5/25 10:16
  *****/
 
 @RestController
@@ -32,7 +32,7 @@ public class SkuController {
      * @return
      */
     @PostMapping(value = "/search/{page}/{size}" )
-    public Result<PageInfo> findPage(@RequestBody(required = false)  Sku sku, @PathVariable  int page, @PathVariable  int size){
+    public Result<PageInfo> findPage(@RequestBody(required = false) Sku sku, @PathVariable  int page, @PathVariable  int size){
         //调用SkuService实现分页条件查询Sku
         PageInfo<Sku> pageInfo = skuService.findPage(sku, page, size);
         return new Result(true, StatusCode.OK,"查询成功",pageInfo);
@@ -57,7 +57,7 @@ public class SkuController {
      * @return
      */
     @PostMapping(value = "/search" )
-    public Result<List<Sku>> findList(@RequestBody(required = false)  Sku sku){
+    public Result<List<Sku>> findList(@RequestBody(required = false) Sku sku){
         //调用SkuService实现条件查询Sku
         List<Sku> list = skuService.findList(sku);
         return new Result<List<Sku>>(true, StatusCode.OK,"查询成功",list);
@@ -82,7 +82,7 @@ public class SkuController {
      * @return
      */
     @PutMapping(value="/{id}")
-    public Result update(@RequestBody  Sku sku, @PathVariable Long id){
+    public Result update(@RequestBody Sku sku, @PathVariable Long id){
         //设置主键值
         sku.setId(id);
         //调用SkuService实现修改Sku
@@ -96,7 +96,7 @@ public class SkuController {
      * @return
      */
     @PostMapping
-    public Result add(@RequestBody   Sku sku){
+    public Result add(@RequestBody Sku sku){
         //调用SkuService实现添加Sku
         skuService.add(sku);
         return new Result(true, StatusCode.OK,"添加成功");

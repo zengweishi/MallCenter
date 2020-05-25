@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:
- * @Date 2019/6/14 0:18
+ * @Date 2020/5/25 10:16
  *****/
 
 @RestController
@@ -32,7 +32,7 @@ public class TemplateController {
      * @return
      */
     @PostMapping(value = "/search/{page}/{size}" )
-    public Result<PageInfo> findPage(@RequestBody(required = false)  Template template, @PathVariable  int page, @PathVariable  int size){
+    public Result<PageInfo> findPage(@RequestBody(required = false) Template template, @PathVariable  int page, @PathVariable  int size){
         //调用TemplateService实现分页条件查询Template
         PageInfo<Template> pageInfo = templateService.findPage(template, page, size);
         return new Result(true, StatusCode.OK,"查询成功",pageInfo);
@@ -57,7 +57,7 @@ public class TemplateController {
      * @return
      */
     @PostMapping(value = "/search" )
-    public Result<List<Template>> findList(@RequestBody(required = false)  Template template){
+    public Result<List<Template>> findList(@RequestBody(required = false) Template template){
         //调用TemplateService实现条件查询Template
         List<Template> list = templateService.findList(template);
         return new Result<List<Template>>(true, StatusCode.OK,"查询成功",list);
@@ -82,7 +82,7 @@ public class TemplateController {
      * @return
      */
     @PutMapping(value="/{id}")
-    public Result update(@RequestBody  Template template, @PathVariable Integer id){
+    public Result update(@RequestBody Template template, @PathVariable Integer id){
         //设置主键值
         template.setId(id);
         //调用TemplateService实现修改Template
@@ -96,7 +96,7 @@ public class TemplateController {
      * @return
      */
     @PostMapping
-    public Result add(@RequestBody   Template template){
+    public Result add(@RequestBody Template template){
         //调用TemplateService实现添加Template
         templateService.add(template);
         return new Result(true, StatusCode.OK,"添加成功");

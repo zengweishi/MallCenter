@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:
- * @Date 2019/6/14 0:18
+ * @Date 2020/5/25 10:16
  *****/
 
 @RestController
@@ -32,7 +32,7 @@ public class PrefController {
      * @return
      */
     @PostMapping(value = "/search/{page}/{size}" )
-    public Result<PageInfo> findPage(@RequestBody(required = false)  Pref pref, @PathVariable  int page, @PathVariable  int size){
+    public Result<PageInfo> findPage(@RequestBody(required = false) Pref pref, @PathVariable  int page, @PathVariable  int size){
         //调用PrefService实现分页条件查询Pref
         PageInfo<Pref> pageInfo = prefService.findPage(pref, page, size);
         return new Result(true, StatusCode.OK,"查询成功",pageInfo);
@@ -57,7 +57,7 @@ public class PrefController {
      * @return
      */
     @PostMapping(value = "/search" )
-    public Result<List<Pref>> findList(@RequestBody(required = false)  Pref pref){
+    public Result<List<Pref>> findList(@RequestBody(required = false) Pref pref){
         //调用PrefService实现条件查询Pref
         List<Pref> list = prefService.findList(pref);
         return new Result<List<Pref>>(true, StatusCode.OK,"查询成功",list);
@@ -82,7 +82,7 @@ public class PrefController {
      * @return
      */
     @PutMapping(value="/{id}")
-    public Result update(@RequestBody  Pref pref, @PathVariable Integer id){
+    public Result update(@RequestBody Pref pref, @PathVariable Integer id){
         //设置主键值
         pref.setId(id);
         //调用PrefService实现修改Pref
@@ -96,7 +96,7 @@ public class PrefController {
      * @return
      */
     @PostMapping
-    public Result add(@RequestBody   Pref pref){
+    public Result add(@RequestBody Pref pref){
         //调用PrefService实现添加Pref
         prefService.add(pref);
         return new Result(true, StatusCode.OK,"添加成功");

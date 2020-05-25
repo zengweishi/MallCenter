@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:
- * @Date 2019/6/14 0:18
+ * @Date 2020/5/25 10:16
  *****/
 
 @RestController
@@ -32,7 +32,7 @@ public class StockBackController {
      * @return
      */
     @PostMapping(value = "/search/{page}/{size}" )
-    public Result<PageInfo> findPage(@RequestBody(required = false)  StockBack stockBack, @PathVariable  int page, @PathVariable  int size){
+    public Result<PageInfo> findPage(@RequestBody(required = false) StockBack stockBack, @PathVariable  int page, @PathVariable  int size){
         //调用StockBackService实现分页条件查询StockBack
         PageInfo<StockBack> pageInfo = stockBackService.findPage(stockBack, page, size);
         return new Result(true, StatusCode.OK,"查询成功",pageInfo);
@@ -57,7 +57,7 @@ public class StockBackController {
      * @return
      */
     @PostMapping(value = "/search" )
-    public Result<List<StockBack>> findList(@RequestBody(required = false)  StockBack stockBack){
+    public Result<List<StockBack>> findList(@RequestBody(required = false) StockBack stockBack){
         //调用StockBackService实现条件查询StockBack
         List<StockBack> list = stockBackService.findList(stockBack);
         return new Result<List<StockBack>>(true, StatusCode.OK,"查询成功",list);
@@ -82,7 +82,7 @@ public class StockBackController {
      * @return
      */
     @PutMapping(value="/{id}")
-    public Result update(@RequestBody  StockBack stockBack, @PathVariable String id){
+    public Result update(@RequestBody StockBack stockBack, @PathVariable String id){
         //设置主键值
         stockBack.setSkuId(id);
         //调用StockBackService实现修改StockBack
@@ -96,7 +96,7 @@ public class StockBackController {
      * @return
      */
     @PostMapping
-    public Result add(@RequestBody   StockBack stockBack){
+    public Result add(@RequestBody StockBack stockBack){
         //调用StockBackService实现添加StockBack
         stockBackService.add(stockBack);
         return new Result(true, StatusCode.OK,"添加成功");

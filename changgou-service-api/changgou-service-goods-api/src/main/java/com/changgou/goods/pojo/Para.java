@@ -4,9 +4,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:Para构建
- * @Date 2019/6/14 19:13
+ * @Date 2020/5/25 10:16
  *****/
 @Table(name="tb_para")
 public class Para implements Serializable{

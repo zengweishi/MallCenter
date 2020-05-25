@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:
- * @Date 2019/6/18 13:58
+ * @Date 2020/5/25 10:16
  *****/
 @FeignClient(name="goods")
 @RequestMapping("/categoryBrand")

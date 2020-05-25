@@ -1,55 +1,80 @@
 package com.changgou.goods.pojo;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
-@Table(name = "tb_brand")
-public class Brand implements Serializable {
-    @Id
-    private Integer id;//品牌id
-    private String name;//品牌名称
-    private String image;//品牌图片地址
-    private String letter;//品牌的首字母
-    private Integer seq;//排序
+/****
+ * @Author:weishi.zeng
+ * @Description:Brand构建
+ * @Date 2020/5/25 10:16
+ *****/
+@Table(name="tb_brand")
+public class Brand implements Serializable{
 
-    public Integer getId() {
-        return id;
-    }
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+	private Integer id;//品牌id
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    @Column(name = "name")
+	private String name;//品牌名称
 
-    public String getName() {
-        return name;
-    }
+    @Column(name = "image")
+	private String image;//品牌图片地址
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    @Column(name = "letter")
+	private String letter;//品牌的首字母
 
-    public String getImage() {
-        return image;
-    }
+    @Column(name = "seq")
+	private Integer seq;//排序
 
-    public void setImage(String image) {
-        this.image = image;
-    }
 
-    public String getLetter() {
-        return letter;
-    }
 
-    public void setLetter(String letter) {
-        this.letter = letter;
-    }
+	//get方法
+	public Integer getId() {
+		return id;
+	}
 
-    public Integer getSeq() {
-        return seq;
-    }
+	//set方法
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	//get方法
+	public String getName() {
+		return name;
+	}
 
-    public void setSeq(Integer seq) {
-        this.seq = seq;
-    }
+	//set方法
+	public void setName(String name) {
+		this.name = name;
+	}
+	//get方法
+	public String getImage() {
+		return image;
+	}
+
+	//set方法
+	public void setImage(String image) {
+		this.image = image;
+	}
+	//get方法
+	public String getLetter() {
+		return letter;
+	}
+
+	//set方法
+	public void setLetter(String letter) {
+		this.letter = letter;
+	}
+	//get方法
+	public Integer getSeq() {
+		return seq;
+	}
+
+	//set方法
+	public void setSeq(Integer seq) {
+		this.seq = seq;
+	}
+
+
 }

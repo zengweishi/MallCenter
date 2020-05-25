@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:
- * @Date 2019/6/14 0:18
+ * @Date 2020/5/25 10:16
  *****/
 
 @RestController
@@ -32,7 +32,7 @@ public class CategoryBrandController {
      * @return
      */
     @PostMapping(value = "/search/{page}/{size}" )
-    public Result<PageInfo> findPage(@RequestBody(required = false)  CategoryBrand categoryBrand, @PathVariable  int page, @PathVariable  int size){
+    public Result<PageInfo> findPage(@RequestBody(required = false) CategoryBrand categoryBrand, @PathVariable  int page, @PathVariable  int size){
         //调用CategoryBrandService实现分页条件查询CategoryBrand
         PageInfo<CategoryBrand> pageInfo = categoryBrandService.findPage(categoryBrand, page, size);
         return new Result(true, StatusCode.OK,"查询成功",pageInfo);
@@ -57,7 +57,7 @@ public class CategoryBrandController {
      * @return
      */
     @PostMapping(value = "/search" )
-    public Result<List<CategoryBrand>> findList(@RequestBody(required = false)  CategoryBrand categoryBrand){
+    public Result<List<CategoryBrand>> findList(@RequestBody(required = false) CategoryBrand categoryBrand){
         //调用CategoryBrandService实现条件查询CategoryBrand
         List<CategoryBrand> list = categoryBrandService.findList(categoryBrand);
         return new Result<List<CategoryBrand>>(true, StatusCode.OK,"查询成功",list);
@@ -82,7 +82,7 @@ public class CategoryBrandController {
      * @return
      */
     @PutMapping(value="/{id}")
-    public Result update(@RequestBody  CategoryBrand categoryBrand, @PathVariable Integer id){
+    public Result update(@RequestBody CategoryBrand categoryBrand, @PathVariable Integer id){
         //设置主键值
         categoryBrand.setCategoryId(id);
         //调用CategoryBrandService实现修改CategoryBrand
@@ -96,7 +96,7 @@ public class CategoryBrandController {
      * @return
      */
     @PostMapping
-    public Result add(@RequestBody   CategoryBrand categoryBrand){
+    public Result add(@RequestBody CategoryBrand categoryBrand){
         //调用CategoryBrandService实现添加CategoryBrand
         categoryBrandService.add(categoryBrand);
         return new Result(true, StatusCode.OK,"添加成功");

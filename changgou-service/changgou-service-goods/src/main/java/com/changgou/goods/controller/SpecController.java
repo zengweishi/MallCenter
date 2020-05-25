@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:
- * @Date 2019/6/14 0:18
+ * @Date 2020/5/25 10:16
  *****/
 
 @RestController
@@ -32,7 +32,7 @@ public class SpecController {
      * @return
      */
     @PostMapping(value = "/search/{page}/{size}" )
-    public Result<PageInfo> findPage(@RequestBody(required = false)  Spec spec, @PathVariable  int page, @PathVariable  int size){
+    public Result<PageInfo> findPage(@RequestBody(required = false) Spec spec, @PathVariable  int page, @PathVariable  int size){
         //调用SpecService实现分页条件查询Spec
         PageInfo<Spec> pageInfo = specService.findPage(spec, page, size);
         return new Result(true, StatusCode.OK,"查询成功",pageInfo);
@@ -57,7 +57,7 @@ public class SpecController {
      * @return
      */
     @PostMapping(value = "/search" )
-    public Result<List<Spec>> findList(@RequestBody(required = false)  Spec spec){
+    public Result<List<Spec>> findList(@RequestBody(required = false) Spec spec){
         //调用SpecService实现条件查询Spec
         List<Spec> list = specService.findList(spec);
         return new Result<List<Spec>>(true, StatusCode.OK,"查询成功",list);
@@ -82,7 +82,7 @@ public class SpecController {
      * @return
      */
     @PutMapping(value="/{id}")
-    public Result update(@RequestBody  Spec spec, @PathVariable Integer id){
+    public Result update(@RequestBody Spec spec, @PathVariable Integer id){
         //设置主键值
         spec.setId(id);
         //调用SpecService实现修改Spec
@@ -96,7 +96,7 @@ public class SpecController {
      * @return
      */
     @PostMapping
-    public Result add(@RequestBody   Spec spec){
+    public Result add(@RequestBody Spec spec){
         //调用SpecService实现添加Spec
         specService.add(spec);
         return new Result(true, StatusCode.OK,"添加成功");

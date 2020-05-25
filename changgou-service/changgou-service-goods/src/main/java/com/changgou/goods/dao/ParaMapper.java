@@ -3,9 +3,9 @@ import com.changgou.goods.pojo.Para;
 import tk.mybatis.mapper.common.Mapper;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:Para的Dao
- * @Date 2019/6/14 0:12
+ * @Date 2020/5/25 10:16
  *****/
 public interface ParaMapper extends Mapper<Para> {
 }

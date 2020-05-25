@@ -6,9 +6,9 @@ import com.github.pagehelper.PageInfo;
 import java.util.List;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:UndoLog业务层接口
- * @Date 2019/6/14 0:16
+ * @Date 2020/5/25 10:16
  *****/
 public interface UndoLogService {
 

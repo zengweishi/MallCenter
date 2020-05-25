@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:
- * @Date 2019/6/14 0:18
+ * @Date 2020/5/25 10:16
  *****/
 
 @RestController
@@ -32,7 +32,7 @@ public class UndoLogController {
      * @return
      */
     @PostMapping(value = "/search/{page}/{size}" )
-    public Result<PageInfo> findPage(@RequestBody(required = false)  UndoLog undoLog, @PathVariable  int page, @PathVariable  int size){
+    public Result<PageInfo> findPage(@RequestBody(required = false) UndoLog undoLog, @PathVariable  int page, @PathVariable  int size){
         //调用UndoLogService实现分页条件查询UndoLog
         PageInfo<UndoLog> pageInfo = undoLogService.findPage(undoLog, page, size);
         return new Result(true, StatusCode.OK,"查询成功",pageInfo);
@@ -57,7 +57,7 @@ public class UndoLogController {
      * @return
      */
     @PostMapping(value = "/search" )
-    public Result<List<UndoLog>> findList(@RequestBody(required = false)  UndoLog undoLog){
+    public Result<List<UndoLog>> findList(@RequestBody(required = false) UndoLog undoLog){
         //调用UndoLogService实现条件查询UndoLog
         List<UndoLog> list = undoLogService.findList(undoLog);
         return new Result<List<UndoLog>>(true, StatusCode.OK,"查询成功",list);
@@ -82,7 +82,7 @@ public class UndoLogController {
      * @return
      */
     @PutMapping(value="/{id}")
-    public Result update(@RequestBody  UndoLog undoLog, @PathVariable Long id){
+    public Result update(@RequestBody UndoLog undoLog, @PathVariable Long id){
         //设置主键值
         undoLog.setId(id);
         //调用UndoLogService实现修改UndoLog
@@ -96,7 +96,7 @@ public class UndoLogController {
      * @return
      */
     @PostMapping
-    public Result add(@RequestBody   UndoLog undoLog){
+    public Result add(@RequestBody UndoLog undoLog){
         //调用UndoLogService实现添加UndoLog
         undoLogService.add(undoLog);
         return new Result(true, StatusCode.OK,"添加成功");

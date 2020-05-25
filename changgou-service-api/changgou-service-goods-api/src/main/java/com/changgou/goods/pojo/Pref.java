@@ -5,9 +5,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 /****
- * @Author:传智播客
+ * @Author:weishi.zeng
  * @Description:Pref构建
- * @Date 2019/6/14 19:13
+ * @Date 2020/5/25 10:16
  *****/
 @Table(name="tb_pref")
 public class Pref implements Serializable{
