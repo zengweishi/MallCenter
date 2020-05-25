@@ -2,6 +2,7 @@ package com.changgou.goods.controller;
 
 import com.changgou.common.pojo.Result;
 import com.changgou.common.pojo.StatusCode;
+import com.changgou.goods.dto.Goods;
 import com.changgou.goods.pojo.Spu;
 import com.changgou.goods.service.SpuService;
 import com.github.pagehelper.PageInfo;
@@ -123,5 +124,14 @@ public class SpuController {
         //调用SpuService实现查询所有Spu
         List<Spu> list = spuService.findAll();
         return new Result<List<Spu>>(true, StatusCode.OK,"查询成功",list) ;
+    }
+
+    /**
+     * 添加商品
+     */
+    @PostMapping
+    public Result add(@RequestBody Goods goods) {
+        spuService.addGoods(goods);
+        return new Result(true,StatusCode.OK,"商品添加成功");
     }
 }

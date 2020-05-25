@@ -1,16 +1,23 @@
 package com.changgou.goods.service.impl;
 
-import com.changgou.goods.dao.SpuMapper;
-import com.changgou.goods.pojo.Spu;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.changgou.common.util.IdWorker;
+import com.changgou.goods.dao.*;
+import com.changgou.goods.dto.Goods;
+import com.changgou.goods.pojo.*;
 import com.changgou.goods.service.SpuService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /****
  * @Author:weishi.zeng
@@ -22,6 +29,16 @@ public class SpuServiceImpl implements SpuService {
 
     @Autowired
     private SpuMapper spuMapper;
+    @Autowired
+    private IdWorker idWorker;
+    @Autowired
+    private BrandMapper brandMapper;
+    @Autowired
+    private SkuMapper skuMapper;
+    @Autowired
+    private CategoryMapper categoryMapper;
+    @Autowired
+    private CategoryBrandMapper categoryBrandMapper;
 
 
     /**
@@ -214,5 +231,58 @@ public class SpuServiceImpl implements SpuService {
     @Override
     public List<Spu> findAll() {
         return spuMapper.selectAll();
+    }
+
+    /**
+     * 添加商品
+     * @param goods
+     */
+    @Transactional
+    @Override
+    public void addGoods(Goods goods) {
+        goods.getSpu().setId(idWorker.nextId());
+        spuMapper.insertSelective(goods.getSpu());
+        saveSkuList(goods);
+    }
+
+    private void saveSkuList(Goods goods) {
+        Spu spu = goods.getSpu();
+        //查询品牌
+        Brand brand = brandMapper.selectByPrimaryKey(spu.getBrandId());
+        //查询分类(三级分类)
+        Category category = categoryMapper.selectByPrimaryKey(spu.getCategory3Id());
+        CategoryBrand categoryBrand = new CategoryBrand();
+        categoryBrand.setBrandId(brand.getId());
+        categoryBrand.setCategoryId(category.getId());
+        int count = categoryBrandMapper.selectCount(categoryBrand);
+        //判断是否有这个品牌和分类的关系数据
+        if (count == 0) {
+            //如果没有关系数据则添加品牌和分类关系数据
+            categoryBrandMapper.insert(categoryBrand);
+        }
+        List<Sku> skuList = goods.getSkuList();
+        if (skuList != null) {
+            for (Sku sku : skuList) {
+                sku.setId(idWorker.nextId());
+                if (sku.getSpec() == null || "".equals(sku.getSpec())) {
+                    sku.setSpec("{}");
+                }
+                String name = spu.getName();
+                Map<String,String> map = JSON.parseObject(sku.getSpec(), Map.class);
+                for (String values : map.values()) {
+                    //SKU名称=SPU名称+规格参数值（华为P30 + 金色 + 256G + 全网通）
+                    name += " " + values;
+                }
+                sku.setSpec(name);
+                sku.setSpuId(spu.getId());//设置spu的ID
+                Date date = new Date();
+                sku.setCreateTime(date);//创建日期
+                sku.setUpdateTime(date);//修改日期
+                sku.setCategoryId(category.getId());//商品分类ID
+                sku.setCategoryName(category.getName());//商品分类名称
+                sku.setBrandName(brand.getName());//品牌名称
+                skuMapper.insertSelective(sku);//插入sku表数据
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.changgou.goods.service;
 
+import com.changgou.goods.dto.Goods;
 import com.changgou.goods.pojo.Spu;
 import com.github.pagehelper.PageInfo;
 
@@ -66,4 +67,9 @@ public interface SpuService {
      * @return
      */
     List<Spu> findAll();
+
+    /**
+     * 添加商品
+     */
+    void addGoods(Goods goods);
 }
