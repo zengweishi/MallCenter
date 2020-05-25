@@ -245,6 +245,42 @@ public class SpuServiceImpl implements SpuService {
         saveSkuList(goods);
     }
 
+    /**
+     * 根据ID查询商品
+     * @param id
+     * @return
+     */
+    @Override
+    public Goods findGoodsById(Long id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        Example example = new Example(Sku.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("spuId",id);
+        List<Sku> skuList = skuMapper.selectByExample(example);
+        Goods goods = new Goods();
+        goods.setSpu(spu);
+        goods.setSkuList(skuList);
+        return goods;
+    }
+
+    /**
+     * 修改商品
+     * @param goods
+     */
+    @Override
+    @Transactional
+    public void updateGoods(Goods goods) {
+        //更新SPU
+        spuMapper.updateByPrimaryKey(goods.getSpu());
+        //删除旧SKU列表
+        Example example = new Example(Sku.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("spuId",goods.getSpu().getId());
+        skuMapper.deleteByExample(criteria);
+        //保存新SKU
+        saveSkuList(goods);
+    }
+
     private void saveSkuList(Goods goods) {
         Spu spu = goods.getSpu();
         //查询品牌

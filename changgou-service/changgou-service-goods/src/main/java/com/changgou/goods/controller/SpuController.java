@@ -134,4 +134,22 @@ public class SpuController {
         spuService.addGoods(goods);
         return new Result(true,StatusCode.OK,"商品添加成功");
     }
+
+    /**
+     * 根据ID查询商品
+     */
+    @GetMapping("/{id}")
+    public Result findGoodsById(@PathVariable Long id) {
+        Goods goods = spuService.findGoodsById(id);
+        return new Result(true,StatusCode.OK,"商品查询成功",goods);
+    }
+
+    /**
+     * 修改商品
+     */
+    @PutMapping(value = "/{id}")
+    public Result update(@RequestBody Goods goods,@PathVariable Long id) {
+        spuService.updateGoods(goods);
+        return new Result(true,StatusCode.OK,"商品修改成功");
+    }
 }

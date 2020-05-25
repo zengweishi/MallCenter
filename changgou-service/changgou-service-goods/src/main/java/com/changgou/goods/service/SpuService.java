@@ -72,4 +72,14 @@ public interface SpuService {
      * 添加商品
      */
     void addGoods(Goods goods);
+
+    /**
+     * 根据ID查询商品
+     */
+    Goods findGoodsById(Long id);
+
+    /**
+     * 修改商品
+     */
+    void updateGoods(Goods goods);
 }
