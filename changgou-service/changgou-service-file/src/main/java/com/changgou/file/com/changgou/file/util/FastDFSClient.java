@@ -6,9 +6,7 @@ import org.csource.fastdfs.*;
 import org.csource.common.NameValuePair;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * @Auther: weishi.zeng
@@ -167,6 +165,27 @@ public class FastDFSClient {
     private static TrackerServer getTrackerServer() throws IOException {
         TrackerClient trackerClient = new TrackerClient();
         return trackerClient.getConnection();
+    }
+
+    /**
+     * 文件下载测试
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        //文件下载，获取输入流
+        InputStream inputStream = downLoadFile("group1", "M00/00/00/wKjThF7KgxOAbKLUAAFftS_4aTI641.png");
+        //将文件写入本地磁盘
+        FileOutputStream fileOutputStream = new FileOutputStream("E:/1.jpg");
+
+        //定义缓冲区
+        byte[] bytes = new byte[1024];
+        while(inputStream.read(bytes) != -1) {
+            fileOutputStream.write(bytes);
+        }
+        fileOutputStream.flush();
+        fileOutputStream.close();
+        inputStream.close();
     }
 
 
