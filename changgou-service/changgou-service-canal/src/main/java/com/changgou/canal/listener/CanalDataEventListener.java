@@ -37,14 +37,13 @@ public class CanalDataEventListener {
      * @param rowData 操作数据
      */
     @ListenPoint(destination = "example",schema = "changgou_content",table = {"tb_content"},
-        eventType = {CanalEntry.EventType.UPDATE,CanalEntry.EventType.INSERT,CanalEntry.EventType.DELETE})
+        eventType = {CanalEntry.EventType.UPDATE, CanalEntry.EventType.INSERT, CanalEntry.EventType.DELETE})
     public void onEventCustomUpdate(CanalEntry.EventType eventType,CanalEntry.RowData rowData) {
-        log.error("操作类型：{}，rowData:{}", JSON.toJSONString(eventType),JSON.toJSONString(rowData));
+        log.error("操作类型：{}，操作数据rowData:{}", eventType,rowData);
         //获取category_id
         Long categoryId = getColumn(rowData,CATEGORY_ID);
         //根据category_id到content服务中查找content列表
         Result<List<Content>> result = contentFeign.findContentByCategoryId(categoryId);
-        log.error("远程获取的content数据：{}",JSON.toJSONString(result));
         //将查找到的列表保存到redis中
         if (!CollectionUtils.isEmpty(result.getData())) {
             redisTemplate.boundValueOps(CONTENT_KEY_PREFIX + categoryId).set(JSON.toJSONString(result.getData()));
