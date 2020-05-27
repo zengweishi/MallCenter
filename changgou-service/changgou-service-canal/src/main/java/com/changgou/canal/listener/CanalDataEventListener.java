@@ -45,9 +45,8 @@ public class CanalDataEventListener {
         //根据category_id到content服务中查找content列表
         Result<List<Content>> result = contentFeign.findContentByCategoryId(categoryId);
         //将查找到的列表保存到redis中
-        if (!CollectionUtils.isEmpty(result.getData())) {
-            redisTemplate.boundValueOps(CONTENT_KEY_PREFIX + categoryId).set(JSON.toJSONString(result.getData()));
-        }
+        redisTemplate.boundValueOps(CONTENT_KEY_PREFIX + categoryId).set(JSON.toJSONString(result.getData()));
+
     }
 
     /**
