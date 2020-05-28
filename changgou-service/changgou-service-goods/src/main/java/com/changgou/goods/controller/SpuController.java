@@ -82,7 +82,7 @@ public class SpuController {
      * @param id
      * @return
      */
-    @PutMapping(value="/{id}")
+    @PutMapping(value="/update/{id}")
     public Result update(@RequestBody Spu spu, @PathVariable Long id){
         //设置主键值
         spu.setId(id);
@@ -96,7 +96,7 @@ public class SpuController {
      * @param spu
      * @return
      */
-    @PostMapping
+    @PostMapping("/addSpu")
     public Result add(@RequestBody Spu spu){
         //调用SpuService实现添加Spu
         spuService.add(spu);
@@ -108,7 +108,7 @@ public class SpuController {
      * @param id
      * @return
      */
-    @GetMapping("/{id}")
+    @GetMapping("/findSpu/{id}")
     public Result<Spu> findById(@PathVariable Long id){
         //调用SpuService实现根据主键查询Spu
         Spu spu = spuService.findById(id);
