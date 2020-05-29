@@ -7,6 +7,7 @@ import com.changgou.goods.pojo.Sku;
 import com.changgou.search.dao.SkuEsMapper;
 import com.changgou.search.pojo.SkuInfo;
 import com.changgou.search.service.SkuService;
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -32,6 +33,7 @@ import java.util.*;
  * @Description:
  */
 @Service
+@Slf4j
 public class SkuServiceImpl implements SkuService {
     @Autowired
     private SkuFeign skuFeign;
@@ -61,6 +63,7 @@ public class SkuServiceImpl implements SkuService {
      */
     @Override
     public Map search(Map<String, String> searchMap) {
+        log.error("查询条件searchMap:{}",JSON.toJSONString(searchMap));
         //条件构造
         NativeSearchQueryBuilder builder = buildBasicQuery(searchMap);
         //搜索并封装结果
@@ -70,6 +73,7 @@ public class SkuServiceImpl implements SkuService {
         //搜索规格
         Map<String, Set<String>> specMap = searchSpec(builder);
         searchResult.put("specMap",specMap);
+        log.error("搜索结果：{}",JSON.toJSONString(searchMap));
         return searchResult;
     }
 
@@ -79,6 +83,7 @@ public class SkuServiceImpl implements SkuService {
      * @return
      */
     public Map<String, Set<String>> searchSpec(NativeSearchQueryBuilder builder) {
+        //SkInfo中没有指定KeyWord属性(Keyword不分词)，那么此时field中要指明.keyword，不要把规格分词
         builder.addAggregation(AggregationBuilders.terms("skuSpec").field("spec.keyword"));
         AggregatedPage<SkuInfo> skuInfos = elasticsearchTemplate.queryForPage(builder.build(), SkuInfo.class);
         Aggregations aggregations = skuInfos.getAggregations();
@@ -102,6 +107,7 @@ public class SkuServiceImpl implements SkuService {
                 }
             }
         }
+        log.error("规格Map结果：{}",JSON.toJSONString(resultMap));
         return resultMap;
     }
 
@@ -125,6 +131,7 @@ public class SkuServiceImpl implements SkuService {
             for (StringTerms.Bucket bucket : stringTerms.getBuckets()) {
                 list.add(bucket.getKeyAsString());
             }
+            log.error("categoryList结果：{}",JSON.toJSONString(list));
             resultMap.put("categoryList",list);
         }
         if (searchMap == null || searchMap.get("brand") == null) {
@@ -134,6 +141,7 @@ public class SkuServiceImpl implements SkuService {
             for (StringTerms.Bucket bucket : skuBrandTerms.getBuckets()) {
                 brandList.add(bucket.getKeyAsString());
             }
+            log.error("brandList结果：{}",JSON.toJSONString(brandList));
             resultMap.put("brandList",brandList);
         }
     }
@@ -160,7 +168,7 @@ public class SkuServiceImpl implements SkuService {
     private NativeSearchQueryBuilder buildBasicQuery(Map<String, String> searchMap) {
         NativeSearchQueryBuilder builder = new NativeSearchQueryBuilder();
         if (searchMap != null) {
-            //关键字查询
+            //1.关键字查询
             if (!StringUtils.isEmpty(searchMap.get("keywords"))) {
                 builder.withQuery(QueryBuilders.matchQuery("name",searchMap.get("keywords")));
             }
@@ -168,15 +176,35 @@ public class SkuServiceImpl implements SkuService {
             //构建bool查询 用于分类和品牌
             BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
             if (!StringUtils.isEmpty(searchMap.get("category"))) {
-                //分类搜索 match query搜索的时候，首先会解析查询字符串，进行分词，然后查询
+                //2.分类搜索 match query搜索的时候，首先会解析查询字符串，进行分词，然后查询
                 boolQueryBuilder.must(QueryBuilders.matchQuery("categoryName",searchMap.get("category")));
             }
             if (!StringUtils.isEmpty(searchMap.get("brand"))) {
-                //品牌搜索  term query,输入的查询内容是什么，就会按照什么去查询，并不会解析查询内容，对它分词
+                //3.品牌搜索  term query,输入的查询内容是什么，就会按照什么去查询，并不会解析查询内容，对它分词
                 boolQueryBuilder.must(QueryBuilders.termQuery("brandName",searchMap.get("brand")));
             }
+
+            //4.构建规格，搜索入参中规格以spec_为前缀标记
+            for (String key : searchMap.keySet()) {
+                if (key.startsWith("spec_")) {
+                    //"specMap."+key.substring(5)+".keyword" 加keyword不对specMap.XXXXX进行分词 直接精确查询
+                    boolQueryBuilder.must(QueryBuilders.matchQuery("specMap."+key.substring(5)+".keyword",searchMap.get(key)));
+                }
+            }
+
+            //5.构建价格区间 0-500 500-1000 1000
+            String price = searchMap.get("price");
+            if (!StringUtils.isEmpty(price)) {
+                String[] priceArr = price.split("-");
+                if (priceArr.length > 1) {
+                    //price <= y
+                    boolQueryBuilder.must(QueryBuilders.rangeQuery("price").lte(priceArr[1]));
+                }
+                //x<price
+                boolQueryBuilder.must(QueryBuilders.rangeQuery("price").gt(priceArr[0]));
+            }
             //添加过滤条件
-            builder.withFilter(boolQueryBuilder);
+            builder.withQuery(boolQueryBuilder);
         }
         return builder;
     }
