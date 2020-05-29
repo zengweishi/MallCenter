@@ -23,10 +23,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Auther: weishi.zeng
@@ -67,16 +64,46 @@ public class SkuServiceImpl implements SkuService {
         NativeSearchQueryBuilder builder = getNativeSearchQueryBuilder(searchMap);
         //搜索并封装结果
         Map searchResult = getSearchResult(builder);
-        //搜索分类
-        searchCategoryList(builder,searchResult);
+        //搜索分类和品牌
+        searchCategoryList(builder,searchResult,searchMap);
+        //搜索规格
+        Map<String, Set<String>> specMap = searchSpec(builder);
+        searchResult.put("specMap",specMap);
         return searchResult;
+    }
+
+    public Map<String, Set<String>> searchSpec(NativeSearchQueryBuilder builder) {
+        builder.addAggregation(AggregationBuilders.terms("skuSpec").field("spec.keyword"));
+        AggregatedPage<SkuInfo> skuInfos = elasticsearchTemplate.queryForPage(builder.build(), SkuInfo.class);
+        Aggregations aggregations = skuInfos.getAggregations();
+        StringTerms stringTerms = aggregations.get("skuSpec");
+        ArrayList<String> list = new ArrayList<>();
+        for (StringTerms.Bucket bucket : stringTerms.getBuckets()) {
+            //获取规格json串
+            list.add(bucket.getKeyAsString());
+        }
+        //将规格封装到一个Map中
+        Map<String,Set<String>> resultMap = new HashMap<>();
+        for (String specStr : list) {
+            Map<String,String> map = JSON.parseObject(specStr, Map.class);
+            for (Map.Entry<String,String> entry : map.entrySet()) {
+                if (resultMap.get(entry.getKey()) != null) {
+                    resultMap.get(entry.getKey()).add(entry.getValue());
+                } else {
+                    HashSet<String> set = new HashSet<>();
+                    set.add(entry.getValue());
+                    resultMap.put(entry.getKey(),set);
+                }
+            }
+        }
+        return resultMap;
     }
 
     /**
      * 搜索分类分组数据展示在界面上的搜索栏
      * @return
      */
-    public void searchCategoryList(NativeSearchQueryBuilder builder,Map<String,Object> searchMap) {
+    public void searchCategoryList(NativeSearchQueryBuilder builder,Map<String,Object> resultMap,Map<String, String> searchMap) {
         //根据categoryName进行统计，统计出来的列名命名为skuCategory(指定查询域并取别名)
         builder.addAggregation(AggregationBuilders.terms("skuCategory").field("categoryName"));
         builder.addAggregation(AggregationBuilders.terms("skuBrand").field("brandName"));
@@ -84,21 +111,25 @@ public class SkuServiceImpl implements SkuService {
         AggregatedPage<SkuInfo> skuInfos = elasticsearchTemplate.queryForPage(builder.build(), SkuInfo.class);
         //获取所有的分组查询数据
         Aggregations aggregations = skuInfos.getAggregations();
-        //从所有数据中获取别名为skuCategory的数据
-        StringTerms stringTerms = aggregations.get("skuCategory");
-        //封装分类List集合，将结果存入到List中
-        ArrayList<String> list = new ArrayList<>();
-        for (StringTerms.Bucket bucket : stringTerms.getBuckets()) {
-            list.add(bucket.getKeyAsString());
+        if (searchMap == null || searchMap.get("category") != null) {
+            //从所有数据中获取别名为skuCategory的数据
+            StringTerms stringTerms = aggregations.get("skuCategory");
+            //封装分类List集合，将结果存入到List中
+            ArrayList<String> list = new ArrayList<>();
+            for (StringTerms.Bucket bucket : stringTerms.getBuckets()) {
+                list.add(bucket.getKeyAsString());
+            }
+            resultMap.put("categoryList",list);
         }
-        searchMap.put("categoryList",list);
-        //封装品牌List集合，将结果存入到List中
-        StringTerms skuBrandTerms = aggregations.get("skuBrand");
-        ArrayList<String> brandList = new ArrayList<>();
-        for (StringTerms.Bucket bucket : skuBrandTerms.getBuckets()) {
-            brandList.add(bucket.getKeyAsString());
+        if (searchMap == null || searchMap.get("brand") != null) {
+            //封装品牌List集合，将结果存入到List中
+            StringTerms skuBrandTerms = aggregations.get("skuBrand");
+            ArrayList<String> brandList = new ArrayList<>();
+            for (StringTerms.Bucket bucket : skuBrandTerms.getBuckets()) {
+                brandList.add(bucket.getKeyAsString());
+            }
+            resultMap.put("brandList",brandList);
         }
-        searchMap.put("brandList",brandList);
     }
 
     private Map getSearchResult(NativeSearchQueryBuilder builder) {
