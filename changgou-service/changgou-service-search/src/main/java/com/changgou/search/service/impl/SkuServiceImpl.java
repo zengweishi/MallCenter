@@ -1,6 +1,7 @@
 package com.changgou.search.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.changgou.common.pojo.PageResult;
 import com.changgou.common.pojo.Result;
 import com.changgou.goods.feign.SkuFeign;
 import com.changgou.goods.pojo.Sku;
@@ -16,8 +17,11 @@ import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
@@ -30,7 +34,7 @@ import java.util.*;
 /**
  * @Auther: weishi.zeng
  * @Date: 2020/5/28 11:33
- * @Description:
+ * @Description: ES实现SKU搜索
  */
 @Service
 @Slf4j
@@ -203,9 +207,31 @@ public class SkuServiceImpl implements SkuService {
                 //x<price
                 boolQueryBuilder.must(QueryBuilders.rangeQuery("price").gt(priceArr[0]));
             }
+
+            //6.排序
+            String sortRule = searchMap.get("sortRule"); //ASC DESC
+            String sortField = searchMap.get("sortField"); //price
+            if (!StringUtils.isEmpty(sortRule) && !StringUtils.isEmpty(sortField)) {
+                builder.withSort(SortBuilders.fieldSort(sortField).order(SortOrder.valueOf(sortRule)));
+            }
+            //分页
+            Integer pageNo = pageCovert(searchMap);
+            Integer size = 3;
+            PageRequest pageRequest = PageRequest.of(pageNo-1, size);
+            builder.withPageable(pageRequest);
+
             //添加过滤条件
             builder.withQuery(boolQueryBuilder);
         }
         return builder;
+    }
+
+    private Integer pageCovert(Map<String, String> searchMap) {
+        try {
+            return Integer.valueOf(searchMap.get("pageNum"));
+        } catch (Exception e) {
+            log.error("页数pageNum异常");
+        }
+        return 1;
     }
 }
