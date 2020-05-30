@@ -9,21 +9,30 @@ import com.changgou.search.dao.SkuEsMapper;
 import com.changgou.search.pojo.SkuInfo;
 import com.changgou.search.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.SearchResultMapper;
 import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
+import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPageImpl;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
@@ -156,7 +165,38 @@ public class SkuServiceImpl implements SkuService {
      * @return
      */
     private Map getSearchResult(NativeSearchQueryBuilder builder) {
+        //高亮域配置
+        HighlightBuilder.Field highlightBuilder = new HighlightBuilder.Field("name").preTags("<span style=\"color:red\">").postTags("</span>").fragmentSize(100);
+        //添加高亮域
+        builder.withHighlightFields(highlightBuilder);
         NativeSearchQuery build = builder.build();
+        //分页搜索
+        AggregatedPage<SkuInfo> skuInfoPage = elasticsearchTemplate.queryForPage(build, SkuInfo.class, new SearchResultMapper() {
+            @Override
+            public <T> AggregatedPage<T> mapResults(SearchResponse searchResponse, Class<T> aClass, Pageable pageable) {
+                List<T> list = new ArrayList<T>();
+                //循环搜索数据
+                for (SearchHit hit : searchResponse.getHits()) {
+                    //获取非高亮数据
+                    SkuInfo skuInfo = JSON.parseObject(hit.getSourceAsString(), SkuInfo.class);
+                    //获取高亮数据
+                    HighlightField name = hit.getHighlightFields().get("name");
+                    //将高亮数据替换到非高亮的skuInfo实体中
+                    if (name != null) {
+                        //定义一个字符接收高亮数据
+                        StringBuffer stringBuffer = new StringBuffer();
+                        for (Text text : name.getFragments()) {
+                            log.error("text:{}",JSON.toJSONString(text));
+                            stringBuffer.append(text);
+                        }
+                        //将非高亮数据替换成高亮数据
+                        skuInfo.setName(stringBuffer.toString());
+                    }
+                    list.add((T) skuInfo);
+                }
+                return new AggregatedPageImpl<T>(list,pageable,searchResponse.getHits().getTotalHits());
+            }
+        });
         Page<SkuInfo> skuInfos = elasticsearchTemplate.queryForPage(build, SkuInfo.class);
         Map<String,Object> resultMap = new HashMap<String,Object>();
         resultMap.put("row",skuInfos.getContent());
