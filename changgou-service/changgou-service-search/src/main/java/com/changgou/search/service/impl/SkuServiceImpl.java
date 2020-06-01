@@ -71,6 +71,8 @@ public class SkuServiceImpl implements SkuService {
 
     /**
      * 搜索
+     * 1.搜索商品结果集
+     * 2.搜索构造相关查询条件
      * @param searchMap
      * @return
      */
