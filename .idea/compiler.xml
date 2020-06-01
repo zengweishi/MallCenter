@@ -12,6 +12,7 @@
         <module name="changgou-service-goods" />
         <module name="changgou-web-search" />
         <module name="changgou-common-db" />
+        <module name="changgou-search-web" />
         <module name="changgou-service-search" />
         <module name="changgou-service-file" />
         <module name="changgou-common" />
@@ -20,6 +21,9 @@
         <module name="changgou-eureka" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="changgou-web-search" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
@@ -27,6 +31,7 @@
       <module name="changgou-common-db" options="-parameters" />
       <module name="changgou-eureka" options="-parameters" />
       <module name="changgou-gateway" options="-parameters" />
+      <module name="changgou-search-web" options="-parameters" />
       <module name="changgou-service" options="-parameters" />
       <module name="changgou-service-api" options="-parameters" />
       <module name="changgou-service-canal" options="-parameters" />

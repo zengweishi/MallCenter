@@ -87,8 +87,8 @@ public class SkuServiceImpl implements SkuService {
         searchCategoryList(builder,searchResult,searchMap);
         //搜索规格
         Map<String, Set<String>> specMap = searchSpec(builder);
-        searchResult.put("specMap",specMap);
-        log.error("搜索结果：{}",JSON.toJSONString(searchMap));
+        searchResult.put("specList",specMap);
+        log.error("搜索结果：{}",JSON.toJSONString(searchResult));
         return searchResult;
     }
 
@@ -199,10 +199,11 @@ public class SkuServiceImpl implements SkuService {
                 return new AggregatedPageImpl<T>(list,pageable,searchResponse.getHits().getTotalHits());
             }
         });
-        Page<SkuInfo> skuInfos = elasticsearchTemplate.queryForPage(build, SkuInfo.class);
         Map<String,Object> resultMap = new HashMap<String,Object>();
-        resultMap.put("row",skuInfos.getContent());
-        resultMap.put("totalPages",skuInfos.getTotalPages());
+        resultMap.put("rows",skuInfoPage.getContent());
+        resultMap.put("totalPages",skuInfoPage.getTotalPages());
+        resultMap.put("pageNum",builder.build().getPageable().getPageNumber()+1);
+        resultMap.put("pageSize",builder.build().getPageable().getPageSize());
         return resultMap;
     }
 
@@ -241,6 +242,7 @@ public class SkuServiceImpl implements SkuService {
             //5.构建价格区间 0-500 500-1000 1000
             String price = searchMap.get("price");
             if (!StringUtils.isEmpty(price)) {
+                price = price.replace("元","").replace("以上","");
                 String[] priceArr = price.split("-");
                 if (priceArr.length > 1) {
                     //price <= y
@@ -258,7 +260,7 @@ public class SkuServiceImpl implements SkuService {
             }
             //分页
             Integer pageNo = pageCovert(searchMap);
-            Integer size = 3;
+            Integer size = 10;
             PageRequest pageRequest = PageRequest.of(pageNo-1, size);
             builder.withPageable(pageRequest);
 
