@@ -57,6 +57,8 @@ public class SearchController {
      * @return
      */
     private String[] buildUrl(Map<String,String> searchMap) {
+        //处理特殊字符
+        handelrSearchMap(searchMap);
         //基础url地址
         String url = "/search/list";
         String sortUrl = "/search/list";
@@ -79,5 +81,17 @@ public class SearchController {
             url = url.substring(0,url.length()-1);
         }
         return new String[]{url,sortUrl};
+    }
+
+    /**
+     * 处理特殊字符
+     * @param searchMap
+     */
+    public void handelrSearchMap(Map<String,String> searchMap) {
+        if (searchMap != null) {
+            for (Map.Entry<String,String> entry : searchMap.entrySet()) {
+                entry.setValue(entry.getValue().replace("+","%2B"));
+            }
+        }
     }
 }

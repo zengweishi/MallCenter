@@ -234,8 +234,9 @@ public class SkuServiceImpl implements SkuService {
             //4.构建规格，搜索入参中规格以spec_为前缀标记
             for (String key : searchMap.keySet()) {
                 if (key.startsWith("spec_")) {
+                    String value = searchMap.get(key).replace("\\","");
                     //"specMap."+key.substring(5)+".keyword" 加keyword不对specMap.XXXXX进行分词 直接精确查询
-                    boolQueryBuilder.must(QueryBuilders.matchQuery("specMap."+key.substring(5)+".keyword",searchMap.get(key)));
+                    boolQueryBuilder.must(QueryBuilders.matchQuery("specMap."+key.substring(5)+".keyword",value));
                 }
             }
 
