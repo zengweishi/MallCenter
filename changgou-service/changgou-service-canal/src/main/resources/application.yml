@@ -8,6 +8,11 @@ spring:
     port: 6379
   main:
     allow-bean-definition-overriding: true #解决同一个服务Feign中Bean名重复引起错误配置
+  rabbitmq:
+    host: 192.168.211.132
+    port: 5672
+    username: guest
+    password: guest
 eureka:
   client:
     service-url:

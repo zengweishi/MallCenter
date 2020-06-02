@@ -12,10 +12,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @ControllerAdvice
 @Configuration
+public class EnableMvcConfig implements WebMvcConfigurer{
+
+    /***
+     * 静态资源放行
+     * @param registry
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/items/**").addResourceLocations("classpath:/templates/items/");
+    }
+}
+/*@ControllerAdvice
+@Configuration
 public class EnableMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         //所有以/items/**的请求，都直接到classpath:/templates/items/中找文件
-        registry.addResourceHandler("/item/**").addResourceLocations("classpath:/templates/items/");
+        registry.addResourceHandler("/items/**").addResourceLocations("classpath:/templates/items/");
     }
-}
+}*/

@@ -54,8 +54,10 @@ public class PageServiceImpl implements PageService {
         //构建数据模型
         Map<String,Object> dataMap = new HashMap<>();
         //获取spu 和SKU列表
-        Result<Spu> result = spuFeign.findById(spuId);
+        log.error("开始调用Goods获取SPU，id:{}",spuId);
+        Result<Spu> result = spuFeign.findSpuById(spuId);
         Spu spu = result.getData();
+        log.error("SPU结果，{}",JSON.toJSONString(spu));
 
         //获取分类信息
         dataMap.put("category1",categoryFeign.findById(spu.getCategory1Id()).getData());
@@ -75,26 +77,25 @@ public class PageServiceImpl implements PageService {
         dataMap.put("skuList",resultSku.getData());
         return dataMap;
     }
-    /**
-     * 创建静态页
+    /***
+     * 生成静态页
      * @param spuId
      */
     @Override
     public void createHtml(Long spuId) {
-        log.error("pagepath:"+pagePath);
-        //1.上下文
+        // 1.上下文
         Context context = new Context();
-        Map<String,Object> data = buildDataModel(spuId);
-        context.setVariables(data);
-        //2.准备文件
+        Map<String, Object> dataModel = buildDataModel(spuId);
+        context.setVariables(dataModel);
+        // 2.准备文件
         File dir = new File(pagePath);
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        File file = new File(dir, spuId + ".html");
-        //3.生成文件
-        try(PrintWriter writer = new PrintWriter(file,"UTF-8")) {
-            templateEngine.process("item",context,writer);
+        File dest = new File(dir, spuId + ".html");
+        // 3.生成页面
+        try (PrintWriter writer = new PrintWriter(dest, "UTF-8")) {
+            templateEngine.process("item", context, writer);
         } catch (Exception e) {
             e.printStackTrace();
         }

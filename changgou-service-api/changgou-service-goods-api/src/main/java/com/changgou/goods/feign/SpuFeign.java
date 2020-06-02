@@ -74,8 +74,8 @@ public interface SpuFeign {
      * @param id
      * @return
      */
-    @GetMapping("/{id}")
-    Result<Spu> findById(@PathVariable Long id);
+    @GetMapping("/findSpu/{id}")
+    Result<Spu> findSpuById(@PathVariable Long id);
 
     /***
      * 查询Spu全部数据

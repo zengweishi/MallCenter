@@ -24,6 +24,12 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
+        <!--MQ依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.changgou</groupId>
             <artifactId>changgou-service-content-api</artifactId>

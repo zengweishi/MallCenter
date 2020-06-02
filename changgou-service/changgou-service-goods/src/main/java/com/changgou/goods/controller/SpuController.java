@@ -1,11 +1,13 @@
 package com.changgou.goods.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.changgou.common.pojo.Result;
 import com.changgou.common.pojo.StatusCode;
 import com.changgou.goods.dto.Goods;
 import com.changgou.goods.pojo.Spu;
 import com.changgou.goods.service.SpuService;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/spu")
 @CrossOrigin
+@Slf4j
 public class SpuController {
 
     @Autowired
@@ -109,9 +112,11 @@ public class SpuController {
      * @return
      */
     @GetMapping("/findSpu/{id}")
-    public Result<Spu> findById(@PathVariable Long id){
+    public Result<Spu> findSpuById(@PathVariable Long id){
         //调用SpuService实现根据主键查询Spu
+        log.error("SPU查询入参,id：{}", id);
         Spu spu = spuService.findById(id);
+        log.error("SPU查询结果：{}", JSON.toJSONString(spu));
         return new Result<Spu>(true, StatusCode.OK,"查询成功",spu);
     }
 
@@ -139,7 +144,7 @@ public class SpuController {
      * 根据ID查询商品
      */
     @GetMapping("/{id}")
-    public Result findGoodsById(@PathVariable Long id) {
+    public Result findById(@PathVariable Long id) {
         Goods goods = spuService.findGoodsById(id);
         return new Result(true,StatusCode.OK,"商品查询成功",goods);
     }
