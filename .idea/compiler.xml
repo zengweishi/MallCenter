@@ -24,9 +24,6 @@
         <module name="changgou-service-goods" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="changgou-web-search" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

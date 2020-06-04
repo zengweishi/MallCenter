@@ -2,6 +2,9 @@ package com.changgou.canal.listener;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.changgou.canal.mq.queue.TopicQueue;
+import com.changgou.canal.mq.send.TopicMessageSender;
+import com.changgou.common.pojo.Message;
 import com.changgou.common.pojo.Result;
 import com.changgou.content.feign.ContentFeign;
 import com.changgou.content.pojo.Content;
@@ -26,8 +29,12 @@ public class CanalDataEventListener {
     private ContentFeign contentFeign;
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    private TopicMessageSender topicMessageSender;
 
     private static final String CATEGORY_ID = "category_id";
+
+    private static final String SPU_ID = "id";
 
     private static final String CONTENT_KEY_PREFIX = "content_";
 
@@ -72,5 +79,19 @@ public class CanalDataEventListener {
             }
         }
         return categoryId;
+    }
+
+    /**
+     * 监听SPU表，修改发送MQ通知修改静态页
+     * @param eventType
+     * @param rowData
+     */
+    @ListenPoint(destination = "example",schema = "changou_goods",table = {"tb_spu"},
+        eventType = {CanalEntry.EventType.UPDATE, CanalEntry.EventType.DELETE})
+    public void onEventCustomSpu(CanalEntry.EventType eventType, CanalEntry.RowData rowData) {
+        log.error("操作类型：{}，操作数据rowData:{}", eventType,rowData);
+        Long id = getColumn(rowData, SPU_ID);
+        Message message = new Message(eventType.getNumber(),id,TopicQueue.SPU_INSERT_ROUTE_KEY,TopicQueue.TOPIC_EXCHANGE_SPU);
+        topicMessageSender.sendMessage(message);
     }
 }
