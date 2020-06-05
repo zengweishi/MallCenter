@@ -1,14 +1,20 @@
 package com.changgou.user.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.changgou.common.pojo.Result;
 import com.changgou.common.pojo.StatusCode;
+import com.changgou.common.util.BCrypt;
+import com.changgou.common.util.JwtUtil;
 import com.changgou.user.pojo.User;
 import com.changgou.user.service.UserService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /****
  * @Author:weishi.zeng
@@ -123,5 +129,20 @@ public class UserController {
         //调用UserService实现查询所有User
         List<User> list = userService.findAll();
         return new Result<List<User>>(true, StatusCode.OK,"查询成功",list) ;
+    }
+
+    @GetMapping("/login")
+    public Result login(String username, String password) {
+        User user = userService.findById(username);
+        if (user != null && BCrypt.checkpw(password,user.getPassword())) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("role","USER");
+            map.put("success","SUCCESS");
+            map.put("userName",user.getUsername());
+            //生成令牌
+            String jwt = JwtUtil.createJWT(UUID.randomUUID().toString(), JSON.toJSONString(map), null);
+            return new Result(true,StatusCode.OK,"登录成功",jwt);
+        }
+        return new Result(false,StatusCode.ERROR,"账号或密码错误");
     }
 }
