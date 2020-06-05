@@ -17,7 +17,7 @@ public class TopicQueue {
     /**
      * 队列
      */
-    public static final String TOPIC_QUEUE_SPU = "topic.queue.spu1";
+    public static final String TOPIC_QUEUE_SPU = "topic.queue.spu";
     /**
      * 交换机
      */
@@ -46,7 +46,7 @@ public class TopicQueue {
     }
 
     /**
-     * 队列topic.queue.spu1绑定交换机topic.exchange.spu，设置RouteKey为spu.update
+     * 队列topic.queue.spu绑定交换机topic.exchange.spu，设置RouteKey为spu.update
      * @return
      */
     @Bean

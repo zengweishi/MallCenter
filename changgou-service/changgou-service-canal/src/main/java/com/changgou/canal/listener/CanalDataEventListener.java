@@ -86,12 +86,14 @@ public class CanalDataEventListener {
      * @param eventType
      * @param rowData
      */
-    @ListenPoint(destination = "example",schema = "changou_goods",table = {"tb_spu"},
+    @ListenPoint(destination = "example",schema = "changgou_goods",table = {"tb_spu"},
         eventType = {CanalEntry.EventType.UPDATE, CanalEntry.EventType.DELETE})
     public void onEventCustomSpu(CanalEntry.EventType eventType, CanalEntry.RowData rowData) {
         log.error("操作类型：{}，操作数据rowData:{}", eventType,rowData);
         Long id = getColumn(rowData, SPU_ID);
         Message message = new Message(eventType.getNumber(),id,TopicQueue.SPU_INSERT_ROUTE_KEY,TopicQueue.TOPIC_EXCHANGE_SPU);
+        log.error("开始发送消息：{}",JSON.toJSONString(message));
         topicMessageSender.sendMessage(message);
+        log.error("发送消息成功");
     }
 }
