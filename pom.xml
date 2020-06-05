@@ -9,13 +9,13 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>changgou-gateway</module>
         <module>changgou-service</module>
         <module>changgou-service-api</module>
         <module>changgou-web</module>
         <module>changgou-eureka</module>
         <module>changgou-common</module>
         <module>changgou-common-db</module>
+        <module>changgou-gate-way</module>
     </modules>
 
     <parent>
