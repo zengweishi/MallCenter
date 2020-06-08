@@ -9,8 +9,11 @@ import com.changgou.user.pojo.User;
 import com.changgou.user.service.UserService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,7 +135,7 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public Result login(String username, String password) {
+    public Result login(String username, String password, HttpServletResponse response) {
         User user = userService.findById(username);
         if (user != null && BCrypt.checkpw(password,user.getPassword())) {
             Map<String, Object> map = new HashMap<>();
@@ -141,6 +144,9 @@ public class UserController {
             map.put("userName",user.getUsername());
             //生成令牌
             String jwt = JwtUtil.createJWT(UUID.randomUUID().toString(), JSON.toJSONString(map), null);
+            //将数据添加到Cookie中，下次登录可以从cookie中拿信息
+            Cookie cookie = new Cookie("Authorization", jwt);
+            response.addCookie(cookie);
             return new Result(true,StatusCode.OK,"登录成功",jwt);
         }
         return new Result(false,StatusCode.ERROR,"账号或密码错误");
