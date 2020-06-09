@@ -22,6 +22,10 @@ public class OAuthApplication {
     }
 
 
+    /**
+     * 将RestTemplate注入Spring容器
+     * @return
+     */
     @Bean(name = "restTemplate")
     public RestTemplate restTemplate() {
         return new RestTemplate();

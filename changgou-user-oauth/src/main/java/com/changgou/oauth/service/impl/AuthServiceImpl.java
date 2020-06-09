@@ -3,6 +3,7 @@ package com.changgou.oauth.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.changgou.oauth.service.AuthService;
 import com.changgou.oauth.util.AuthToken;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
@@ -27,6 +28,7 @@ import java.util.Map;
  * @Description: com.changgou.oauth.service.impl
  ****/
 @Service
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
@@ -70,6 +72,7 @@ public class AuthServiceImpl implements AuthService {
         }
         //获取令牌的url
         String path = serviceInstance.getUri().toString() + "/oauth/token";
+        log.error("获取令牌的url:{}",path);
         //定义body
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         //授权方式
