@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="changgou-service-canal" />
+        <module name="changgou-user-oauth" />
         <module name="changgou-service-goods-api" />
         <module name="changgou-service-user-api" />
         <module name="changgou-service-content" />
@@ -31,6 +32,7 @@
     <bytecodeTargetLevel>
       <module name="changgou-gateway" target="1.8" />
       <module name="changgou-gateway-web" target="1.8" />
+      <module name="changgou-web-search" target="1.8" />
       <module name="test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
@@ -57,6 +59,7 @@
       <module name="changgou-service-search" options="-parameters" />
       <module name="changgou-service-search-api" options="-parameters" />
       <module name="changgou-service-user-api" options="-parameters" />
+      <module name="changgou-user-oauth" options="-parameters" />
       <module name="changgou-web" options="-parameters" />
       <module name="changgou-web-item" options="-parameters" />
       <module name="changgou-web-item-api" options="-parameters" />

@@ -11,11 +11,10 @@ spring:
               - PUT
               - DELETE
       routes:
-        - #商品相关请求
         - id: changgou_goods_route
           uri: lb://goods
           predicates:
-            - Path=/api/goods/**
+            - Path=/api/album/**,/api/brand/**,/api/cache/**,/api/categoryBrand/**,/api/category/**,/api/para/**,/api/pref/**,/api/sku/**,/api/spec/**,/api/spu/**,/api/stockBack/**,/api/template/**
           filters:
             - StripPrefix=1
             - name: RequestRateLimiter #请求数限流 名字不能随便写 ，使用默认的facatory
@@ -25,7 +24,7 @@ spring:
                 redis-rate-limiter.burstCapacity: 1
         #用户微服务
         - id: changgou_user_route
-          uri: lb://user #请求/api/user/**,/api/address/**,/api/areas/**,/api/cities/**,/api/provinces/**交给user处理
+          uri: lb://user
           predicates:
             - Path=/api/user/**,/api/address/**,/api/areas/**,/api/cities/**,/api/provinces/**
           filters:
