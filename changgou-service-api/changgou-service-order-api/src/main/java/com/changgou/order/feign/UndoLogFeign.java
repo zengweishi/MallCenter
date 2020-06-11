@@ -1,7 +1,7 @@
-package com.changgou.goods.feign;
+package com.changgou.order.feign;
 
 import com.changgou.common.pojo.Result;
-import com.changgou.goods.pojo.Spu;
+import com.changgou.order.pojo.UndoLog;
 import com.github.pagehelper.PageInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -13,22 +13,22 @@ import java.util.List;
  * @Description:
  * @Date 2020/5/25 10:16
  *****/
-@FeignClient(name="goods")
-@RequestMapping("/spu")
-public interface SpuFeign {
+@FeignClient(name="order")
+@RequestMapping("/undoLog")
+public interface UndoLogFeign {
 
     /***
-     * Spu分页条件搜索实现
-     * @param spu
+     * UndoLog分页条件搜索实现
+     * @param undoLog
      * @param page
      * @param size
      * @return
      */
     @PostMapping(value = "/search/{page}/{size}" )
-    Result<PageInfo> findPage(@RequestBody(required = false) Spu spu, @PathVariable int page, @PathVariable int size);
+    Result<PageInfo> findPage(@RequestBody(required = false) UndoLog undoLog, @PathVariable int page, @PathVariable int size);
 
     /***
-     * Spu分页搜索实现
+     * UndoLog分页搜索实现
      * @param page:当前页
      * @param size:每页显示多少条
      * @return
@@ -37,15 +37,15 @@ public interface SpuFeign {
     Result<PageInfo> findPage(@PathVariable int page, @PathVariable int size);
 
     /***
-     * 多条件搜索品牌数据
-     * @param spu
+     * 多条件搜索UndoLog数据
+     * @param undoLog
      * @return
      */
     @PostMapping(value = "/search" )
-    Result<List<Spu>> findList(@RequestBody(required = false) Spu spu);
+    Result<List<UndoLog>> findList(@RequestBody(required = false) UndoLog undoLog);
 
     /***
-     * 根据ID删除品牌数据
+     * 根据ID删除UndoLog数据
      * @param id
      * @return
      */
@@ -53,42 +53,34 @@ public interface SpuFeign {
     Result delete(@PathVariable Long id);
 
     /***
-     * 修改Spu数据
-     * @param spu
+     * 修改UndoLog数据
+     * @param undoLog
      * @param id
      * @return
      */
     @PutMapping(value="/{id}")
-    Result update(@RequestBody Spu spu, @PathVariable Long id);
+    Result update(@RequestBody UndoLog undoLog, @PathVariable Long id);
 
     /***
-     * 新增Spu数据
-     * @param spu
+     * 新增UndoLog数据
+     * @param undoLog
      * @return
      */
     @PostMapping
-    Result add(@RequestBody Spu spu);
+    Result add(@RequestBody UndoLog undoLog);
 
     /***
-     * 根据ID查询Spu数据
-     * @param id
-     * @return
-     */
-    @GetMapping("/findSpu/{id}")
-    Result<Spu> findSpuById(@PathVariable Long id);
-
-    /***
-     * 查询Spu全部数据
-     * @return
-     */
-    @GetMapping
-    Result<List<Spu>> findAll();
-
-    /***
-     * 根据SpuID查询Spu信息
+     * 根据ID查询UndoLog数据
      * @param id
      * @return
      */
     @GetMapping("/{id}")
-    public Result<Spu> findById(@PathVariable(name = "id") Long id);
+    Result<UndoLog> findById(@PathVariable Long id);
+
+    /***
+     * 查询UndoLog全部数据
+     * @return
+     */
+    @GetMapping
+    Result<List<UndoLog>> findAll();
 }
