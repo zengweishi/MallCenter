@@ -116,7 +116,7 @@ public class UserController {
      * @param id
      * @return
      */
-    @GetMapping("/{id}")
+    @GetMapping({"/{id}","/load/{id}"})
     public Result<User> findById(@PathVariable String id){
         //调用UserService实现根据主键查询User
         User user = userService.findById(id);

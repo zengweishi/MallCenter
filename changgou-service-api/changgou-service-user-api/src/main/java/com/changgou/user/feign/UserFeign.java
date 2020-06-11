@@ -78,6 +78,14 @@ public interface UserFeign {
     Result<User> findById(@PathVariable String id);
 
     /***
+     * 根据ID查询用户信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/load/{id}")
+    Result<User> loadById(@PathVariable String id);
+
+    /***
      * 查询User全部数据
      * @return
      */

@@ -20,6 +20,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /*****
@@ -65,25 +66,18 @@ public class AuthServiceImpl implements AuthService {
      * @return
      */
     private AuthToken applyToken(String username, String password, String clientId, String clientSecret) {
-        //选中认证服务的地址
+        //获取认证服务得地址
         ServiceInstance serviceInstance = loadBalancerClient.choose("user-auth");
-        if (serviceInstance == null) {
-            throw new RuntimeException("找不到对应的服务");
-        }
-        //获取令牌的url
-        String path = serviceInstance.getUri().toString() + "/oauth/token";
-        log.error("获取令牌的url:{}",path);
-        //定义body
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        //授权方式
-        formData.add("grant_type", "password");
-        //账号
-        formData.add("username", username);
-        //密码
-        formData.add("password", password);
-        //定义头
-        MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-        header.add("Authorization", httpbasic(clientId, clientSecret));
+        //获取令牌得url
+        String url = serviceInstance.getUri().toString()+ "/oauth/token";
+        //定义body:授权方式，账号，密码
+        LinkedMultiValueMap<String, String> bodyMap = new LinkedMultiValueMap<>();
+        bodyMap.add("grant_type","password");
+        bodyMap.add("username",username);
+        bodyMap.add("password",password);
+        //定义头header
+        LinkedMultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
+        headerMap.add("Authorization",httpbasic(clientId,clientSecret));
         //指定 restTemplate当遇到400或401响应时候也不要抛出异常，也要正常返回值
         restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
             @Override
@@ -94,31 +88,25 @@ public class AuthServiceImpl implements AuthService {
                 }
             }
         });
-        Map map = null;
+        //http请求spring securiity的申请令牌接口
+        Map body = new HashMap<>();
         try {
-            //http请求spring security的申请令牌接口
-            ResponseEntity<Map> mapResponseEntity = restTemplate.exchange(path, HttpMethod.POST,new HttpEntity<MultiValueMap<String, String>>(formData, header), Map.class);
-            //获取响应数据
-            map = mapResponseEntity.getBody();
-        } catch (RestClientException e) {
+            log.error("HTTP请求开始：new HttpEntity<MultiValueMap<String, String>>(bodyMap, headerMap):{}",JSON.toJSONString(new HttpEntity<MultiValueMap<String, String>>(bodyMap, headerMap)));
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<MultiValueMap<String, String>>(bodyMap, headerMap), Map.class);
+            log.error("HTTP请求结束");
+            body = response.getBody();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        if(map == null || map.get("access_token") == null || map.get("refresh_token") == null || map.get("jti") == null) {
+        if (body == null || body.get("access_token") == null || body.get("refresh_token") == null || body.get("jti") == null) {
             //jti是jwt令牌的唯一标识作为用户身份令牌
-            throw new RuntimeException("创建令牌失败！");
+            throw new RuntimeException("令牌生成失败");
         }
-
-        //将响应数据封装成AuthToken对象
+        //将响应数据包装为AuthToken对象
         AuthToken authToken = new AuthToken();
-        //访问令牌(jwt)
-        String accessToken = (String) map.get("access_token");
-        //刷新令牌(jwt)
-        String refreshToken = (String) map.get("refresh_token");
-        //jti，作为用户的身份标识
-        String jwtToken= (String) map.get("jti");
-        authToken.setJti(jwtToken);
-        authToken.setAccessToken(accessToken);
-        authToken.setRefreshToken(refreshToken);
+        authToken.setAccessToken((String)body.get("access_token"));
+        authToken.setJti((String)body.get("jti"));
+        authToken.setRefreshToken((String)body.get("refresh_token"));
         return authToken;
     }
 

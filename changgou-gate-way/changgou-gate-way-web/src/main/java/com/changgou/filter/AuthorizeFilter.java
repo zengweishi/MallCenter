@@ -57,6 +57,8 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
         //解析token
         try {
             Claims claims = JwtUtil.parseJWT(token);
+            //将token信息存到请求头中
+            request.mutate().header(AUTHORIZE_TOKEN,"Bearer "+token);
         } catch (Exception e) {
             e.printStackTrace();
             //解析失败，401错误
